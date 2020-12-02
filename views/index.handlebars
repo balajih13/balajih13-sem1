@@ -28,10 +28,14 @@
 
     <p>Survey Name: {{record.name}}</p>
     <p>Survey Description: {{record.description}}</p>
-    {{#if record.status}}
-      <p>Score: {{record.score}}</p>
+    {{#if authorised}}
+      {{#if record.status}}
+        <p>Score: {{record.score}}</p>
+      {{else}}
+        <p>Score: You have yet to attempt the survey</p>
+      {{/if}}
     {{else}}
-      <p>Score: You have yet to attempt the survey</p>
+      <p>Score: You need to be logged in to see this</p>
     {{/if}}
   
 	</main>
