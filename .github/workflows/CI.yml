@@ -1,0 +1,31 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: ['*']
+
+jobs:
+  Linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install node packages
+        run: npm install
+      - name: Run linter
+        run: npm run linter
+  Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install node packages
+        run: npm install
+      - name: Run tests
+        run: npm test

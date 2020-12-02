@@ -110,3 +110,73 @@ test('LOGIN    : invalid password', async test => {
 		account.close()
 	}
 })
+
+test('GET SURVEYS DONE    : invalid username', async test => {
+	test.plan(1)
+	const account = await new Accounts()
+	try {
+		await account.register('doej', 'password', 'doej@gmail.com')
+		await account.getSurveysDone('roej')
+		test.fail('error not thrown')
+	} catch(err) {
+		test.is(err.message, 'username "roej" not found', 'incorrect error message')
+	} finally {
+		account.close()
+	}
+})
+
+test('GET SURVEYS DONE    : valid results', async test => {
+	test.plan(1)
+	const account = await new Accounts()
+	try {
+		await account.register('doej', 'password', 'doej@gmail.com')
+		const value = await account.getSurveysDone('doej')
+		test.deepEqual(value, [-1])
+	} catch(err) {
+		test.fail('error thrown')
+	} finally {
+		account.close()
+	}
+})
+
+test('GET SURVEY SCORE    : invalid username', async test => {
+	test.plan(1)
+	const account = await new Accounts()
+	try {
+		await account.register('doej', 'password', 'doej@gmail.com')
+		await account.getSurveyScore('roej', -1)
+		test.fail('error not thrown')
+	} catch(err) {
+		test.is(err.message, 'username "roej" not found', 'incorrect error message')
+	} finally {
+		account.close()
+	}
+})
+
+test('GET SURVEY SCORE    : survey not completed', async test => {
+	test.plan(1)
+	const account = await new Accounts()
+	try {
+		await account.register('doej', 'password', 'doej@gmail.com')
+		await account.getSurveyScore('doej', 2)
+		test.fail('error not thrown')
+	} catch(err) {
+		test.is(err.message, 'survey "2" has not been completed', 'incorrect error message')
+	} finally {
+		account.close()
+	}
+})
+
+// test('GET SURVEY SCORE    : valid results', async test => {
+// 	test.plan(1)
+// 	const account = await new Accounts()
+// 	try {
+// 		await account.register('doej', 'password', 'doej@gmail.com')
+// 		const value = await account.getSurveyScore('doej', -1)
+// 		test.is(value, -1)
+// 	} catch(err) {
+// 		test.fail(err.message)
+// 	} finally {
+// 		account.close()
+// 	}
+// })
