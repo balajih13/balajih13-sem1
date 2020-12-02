@@ -25,10 +25,15 @@
 			</aside>
 		{{/if}}
 	<main>
-		<p>This is the home page. Users can see it without logging in.</p>
-		{{#if authorised}}
-			<p><a href="/secure">secure page</a></p>
-		{{/if}}
+
+    <p>Survey Name: {{record.name}}</p>
+    <p>Survey Description: {{record.description}}</p>
+    {{#if record.status}}
+      <p>Score: {{record.score}}</p>
+    {{else}}
+      <p>Score: You have yet to attempt the survey</p>
+    {{/if}}
+  
 	</main>
 	</body>
 </html>

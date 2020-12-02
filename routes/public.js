@@ -6,6 +6,7 @@ const router = new Router()
 router.use(bodyParser({multipart: true}))
 
 import Accounts from '../modules/accounts.js'
+import Surveys from '../modules/surveys.js'
 const dbName = 'website.db'
 
 /**
@@ -16,6 +17,19 @@ const dbName = 'website.db'
  */
 router.get('/', async ctx => {
 	try {
+    const surveys = await new Surveys()
+    const surveyInformation = await surveys.getSurveyInformation(1)
+    ctx.record.name = surveyInformation.name
+    ctx.record.description = surveyInformation.description
+    if(ctx.session.authorised !== null) {
+      const accounts = await new Accounts()
+      const surveyCompleted = await account.getSurveysDone()
+      ctx.hbs.record.status = false
+      if(surveyCompleted.includes(1)) {
+        ctx.hbs.record.status = true
+        ctx.hbs.record.score = await getSurveyScore(ctx.session.username)
+      }
+    }
 		await ctx.render('index', ctx.hbs)
 	} catch(err) {
 		await ctx.render('error', ctx.hbs)
@@ -64,6 +78,7 @@ router.post('/login', async ctx => {
 	try {
 		const body = ctx.request.body
 		await account.login(body.user, body.pass)
+    ctx.session.username = body.user
 		ctx.session.authorised = true
 		const referrer = body.referrer || '/secure'
 		return ctx.redirect(`${referrer}?msg=you are now logged in...`)
