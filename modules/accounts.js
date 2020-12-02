@@ -20,7 +20,8 @@ class Accounts {
 			this.db = await sqlite.open(dbName)
 			// we need this table to store the user accounts
 			const sql = 'CREATE TABLE IF NOT EXISTS users\
-				(id INTEGER PRIMARY KEY AUTOINCREMENT, user TEXT, pass TEXT, email TEXT);'
+				(id INTEGER PRIMARY KEY AUTOINCREMENT, user TEXT, pass TEXT, email TEXT,\
+surveysDone TEXT, survey1Score TEXT);'
 			await this.db.run(sql)
 			return this
 		})()
@@ -44,7 +45,10 @@ class Accounts {
 		const emails = await this.db.get(sql)
 		if(emails.records !== 0) throw new Error(`email address "${email}" is already in use`)
 		pass = await bcrypt.hash(pass, saltRounds)
-		sql = `INSERT INTO users(user, pass, email) VALUES("${user}", "${pass}", "${email}")`
+		const surveysDone = -1
+		const surveysScore = -1
+		sql = `INSERT INTO users(user, pass, email, surveysDone, survey1Score) VALUES("${user}", "${pass}", "${email}",\
+"${surveysDone}", ${surveysScore})`
 		await this.db.run(sql)
 		return true
 	}
@@ -64,6 +68,37 @@ class Accounts {
 		const valid = await bcrypt.compare(password, record.pass)
 		if(valid === false) throw new Error(`invalid password for account "${username}"`)
 		return true
+	}
+	/**
+	 * returns a list of survey completed (referenced by ID's)
+	 * @param {String} username the username to check
+	 * @returns {Array} returns array of surveys completed
+	 */
+	async getSurveysDone(username) {
+ 		let sql = `SELECT count(id) AS count FROM users WHERE user="${username}";`
+		let records = await this.db.get(sql)
+		if(!records.count) throw new Error(`username "${username}" not found`)
+		sql = `SELECT surveysDone FROM users WHERE user = "${username}";`
+		records = await this.db.get(sql)
+		records = records.surveysDone
+		if(records === '-1') return [-1]
+		return records.split(',')
+	}
+	/**
+	 * returns the score of a survey completed
+	 * @param {String} username the username to check
+	 * @param {Number} id of survey we want the score for
+	 * @returns {Number} returns score of said survey
+	 */
+	async getSurveyScore(username, surveyID) {
+		const surveysDone = await this.getSurveysDone(username)
+		console.log(surveysDone)
+		if(!surveysDone.includes(surveyID) || surveysDone[0] === -1) {
+			throw new Error(`survey "${surveyID}" has not been completed`)
+		}
+		const sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
+		const records = await this.db.get(sql)
+		return Number(records.survey1Score)
 	}
 
 	async close() {
