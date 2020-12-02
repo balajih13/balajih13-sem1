@@ -17,21 +17,25 @@ const dbName = 'website.db'
  */
 router.get('/', async ctx => {
 	try {
-		const surveys = await new Surveys()
+		const surveys = await new Surveys(dbName)
 		const surveyInformation = await surveys.getSurveyInformation(1)
-		ctx.record.name = surveyInformation.name
-		ctx.record.description = surveyInformation.description
-		if(ctx.session.authorised !== null) {
-			const accounts = await new Accounts()
-			const surveyCompleted = await accounts.getSurveysDone()
+    console.log(surveyInformation)
+    ctx.hbs.record = {}
+		ctx.hbs.record.name = surveyInformation.name
+		ctx.hbs.record.description = surveyInformation.description
+		if(ctx.session.authorised === true) {
+			const accounts = await new Accounts(dbName)
+      console.log("SLI")
+			const surveyCompleted = await accounts.getSurveysDone(ctx.session.username)
 			ctx.hbs.record.status = false
 			if(surveyCompleted.includes(1)) {
 				ctx.hbs.record.status = true
-				ctx.hbs.record.score = await accounts.getSurveyScore(ctx.session.username)
+				ctx.hbs.record.score = await accounts.getSurveyScore(ctx.session.username, 1)
 			}
 		}
 		await ctx.render('index', ctx.hbs)
 	} catch(err) {
+    console.log(err.message)
 		await ctx.render('error', ctx.hbs)
 	}
 })
@@ -80,8 +84,8 @@ router.post('/login', async ctx => {
 		await account.login(body.user, body.pass)
 		ctx.session.username = body.user
 		ctx.session.authorised = true
-		const referrer = body.referrer || '/secure'
-		return ctx.redirect(`${referrer}?msg=you are now logged in...`)
+// 		const referrer = body.referrer || '/secure'
+		return ctx.redirect(`/?msg=you are now logged in...`)
 	} catch(err) {
 		ctx.hbs.msg = err.message
 		await ctx.render('login', ctx.hbs)
