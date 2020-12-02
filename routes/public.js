@@ -26,7 +26,7 @@ router.get('/', async ctx => {
 			const accounts = await new Accounts(dbName)
 			const surveyCompleted = await accounts.getSurveysDone(ctx.session.username)
 			ctx.hbs.record.status = false
-			if(surveyCompleted.includes(1)) {
+			if(surveyCompleted.includes('1')) {
 				ctx.hbs.record.status = true
 				ctx.hbs.record.score = await accounts.getSurveyScore(ctx.session.username, 1)
 			}
@@ -35,7 +35,6 @@ router.get('/', async ctx => {
 		console.log(err.message) ;await ctx.render('error', ctx.hbs)
 	}
 })
-
 
 /**
  * The user registration page.

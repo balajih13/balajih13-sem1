@@ -93,7 +93,7 @@ surveysDone TEXT, survey1Score TEXT);'
 	async getSurveyScore(username, surveyID) {
 		const surveysDone = await this.getSurveysDone(username)
 		console.log(surveysDone)
-		if(!surveysDone.includes(surveyID) || surveysDone[0] === -1) {
+		if(!surveysDone.includes(String(surveyID)) || surveysDone[0] === -1) {
 			throw new Error(`survey "${surveyID}" has not been completed`)
 		}
 		const sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
