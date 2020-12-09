@@ -21,7 +21,7 @@ router.get('/', async ctx => {
 	const surveys = await new Surveys(dbName)
 	try {
 		let results = await accounts.getUnansweredPosition(ctx.session.username, 1)
-		if(results !== -1) results = await surveys.getQuestion(results, 1)
+		if(results !== -1) results = await surveys.getQuestion(1, results)
 		else {
       await accounts.updateSurveysDone(ctx.session.username, 1)
       ctx.redirect('/')
