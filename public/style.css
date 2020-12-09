@@ -21,8 +21,8 @@ aside {
 }
 
 header {
-	background-color: #ccc;
-	border-bottom: 5px solid grey;
+	background-color: blueviolet;
+	border-bottom: 5px solid purple;
 	height: 8vw;
 }
 
@@ -73,7 +73,8 @@ p, legend {
 main {
 	width: 100%;
 	margin-left: 3vw;
-	/* background-color: pink; */
+  margin-right: auto ;
+	background-color: #e1c8f2;
 }
 
 article {
