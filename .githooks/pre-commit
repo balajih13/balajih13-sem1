@@ -1,20 +1,23 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e # using the options command to abort script at first error
 echo
 echo "PRE-COMMIT"
 
-EMAIL=$(git config user.email)
-# see if the user is trying to merge a branch into master
-branch="$(git rev-parse --abbrev-ref HEAD)"
-if [ $2 == 'merge' ]; then
-	read -p "  You're about to commit to master, is that what you intended? [y|n] " -n 1 -r < /dev/tty
-  echo
-  if echo $REPLY | grep -E '^[Yy]$' > /dev/null
+EMAIL=$(git config user.email) # see if the user is trying to merge a branch into master
+currentBranch="$(git rev-parse --abbrev-ref HEAD)"
+if [ "$2" = 'merge' ]
+then
+	if [ ${protected_branch} = ${currentBranch} ]
   then
+    read -p "  You're about to commit to master, is that what you intended? [y|n] " -n 1 -r < /dev/tty
+    echo
+    if [ echo "$REPLY" | grep -E '^[Yy]$' > /dev/null ]
+    then
       exit 0 # push will execute
-  fi
+    fi
   exit 1 # push will not execute
+  fi
 fi
 
 ./node_modules/.bin/eslint . 
