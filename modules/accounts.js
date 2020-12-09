@@ -46,9 +46,9 @@ surveysDone TEXT, survey1Score TEXT);'
 		if(emails.records !== 0) throw new Error(`email address "${email}" is already in use`)
 		pass = await bcrypt.hash(pass, saltRounds)
 		const surveysDone = -1
-		const surveysScore = -1
+		const surveysScore = '0,0,0,0,0'
 		sql = `INSERT INTO users(user, pass, email, surveysDone, survey1Score) VALUES("${user}", "${pass}", "${email}",\
-"${surveysDone}", ${surveysScore})`
+"${surveysDone}", "${surveysScore}")`
 		await this.db.run(sql)
 		return true
 	}
@@ -98,7 +98,48 @@ surveysDone TEXT, survey1Score TEXT);'
 		}
 		const sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
 		const records = await this.db.get(sql)
-		return Number(records.survey1Score)
+		let score = 0
+		for(const i of records.survey1Score) {
+			if(i === ',') continue
+			score += Number(i)
+		}
+		return score
+	}
+	/**
+	 * returns the first non-answered question or tells us if we've answered that
+	 * @param {String} username the username to check
+	 * @param {Number} id of survey we want the score for
+	 * @returns {Number} returning position of last unanswered question OR -1 if no questions are unanswered
+	 */
+	async getUnansweredPosition(username, surveyID) {
+		const sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
+		const records = await this.db.get(sql)
+		let question = -1
+		records.survey1Score = records.survey1Score.replace(/,/gi, '')
+		for(let i = 0 ; i < records.survey1Score.length ; i++) {
+			if(records.survey1Score[i] === '0') {
+				question = i + 1
+				break
+			}
+		}
+		return question
+	}
+	/**
+	 * updates the users survey score
+	 * @param {String} username the username to check
+	 * @param {Number} id of survey we want the score for
+	 * @param {Number} score for a respective question
+	 * @returns {Boolean} if everything went well
+	 */
+	async updateScore(username, surveyID, questionScore) {
+ 		let sql = `SELECT count(id) AS count FROM users WHERE user="${username}";`
+		let records = await this.db.get(sql)
+		if(!records.count) throw new Error(`username "${username}" not found`)
+		sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
+		records = await this.db.get(sql)
+		const score = records[`survey${ String(surveyID) }Score`].replace('0', String(questionScore))
+		sql = `UPDATE users SET survey${ String(surveyID) }Score = "${ score }" WHERE username = "${username}";`
+		records = await this.db.run(sql)
 	}
 
 	async close() {
