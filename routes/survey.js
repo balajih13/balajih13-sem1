@@ -17,20 +17,23 @@ async function checkAuth(ctx, next) {
 router.use(checkAuth)
 
 router.get('/', async ctx => {
+	const accounts = await new Accounts(dbName)
+	const surveys = await new Surveys(dbName)
 	try {
-		const accounts = await new Accounts(dbName)
-		const surveys = await new Surveys(dbName)
 		let results = await accounts.getUnansweredPosition(ctx.session.username, 1)
 		if(results !== -1) results = await surveys.getQuestion(results, 1)
 		else {
-			//set survey as done
-			ctx.redirect('/')
+      await accounts.updateSurveysDone(ctx.session.username, 1)
+      ctx.redirect('/')
 		}
 		ctx.hbs.record = results
 		await ctx.render('survey', ctx.hbs)
 	} catch(err) {
 		ctx.hbs.error = err.message
 		await ctx.render('error', ctx.hbs)
+	} finally {
+		accounts.close()
+		surveys.close()
 	}
 })
 

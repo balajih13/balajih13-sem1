@@ -141,8 +141,36 @@ surveysDone TEXT, survey1Score TEXT);'
 		sql = `UPDATE users SET survey${ String(surveyID) }Score = "${ score }" WHERE username = "${username}";`
 		records = await this.db.run(sql)
 	}
+	/**
+	 * sets specific surveys to done the users survey score
+	 * @param {String} username the username to check
+	 * @param {Number} id of survey we want the score for
+	 * @param {Number} score for a respective question
+	 * @returns {Boolean} if everything went well
+	 */
+	async updateScore(username, surveyID, questionScore) {
+ 		let sql = `SELECT count(id) AS count FROM users WHERE user="${username}";`
+		let records = await this.db.get(sql)
+		if(!records.count) throw new Error(`username "${username}" not found`)
+		sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
+		records = await this.db.get(sql)
+		const score = records[`survey${ String(surveyID) }Score`].replace('0', String(questionScore))
+		sql = `UPDATE users SET survey${ String(surveyID) }Score = "${ score }" WHERE username = "${username}";`
+		records = await this.db.run(sql)
+	}
+	/**
+   * sets specific survey as done
+	 * @param {String} username the username to check
+	 * @param {Number} id of survey we want to set as completed
+	 * @returns {Boolean} if everything went well
+	 */
+	async updateSurveysDone(username, surveyID) {
+		const sql = `UPDATE users SET surveysDone = "${surveyID}" WHERE user = "${username}";`
+		await this.db.run(sql)
+		return true
+	}
 
-	async close() {
+	 async close() {
 		await this.db.close()
 	}
 }
