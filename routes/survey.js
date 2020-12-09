@@ -20,7 +20,7 @@ router.get('/', async ctx => {
 	const accounts = await new Accounts(dbName)
 	const surveys = await new Surveys(dbName)
 	try {
-		let results = await accounts.getUnansweredPosition(ctx.session.username, 1)
+		const results = await accounts.getUnansweredPosition(ctx.session.username, 1)
 		if(results !== -1) results = await surveys.getQuestion(results, 1)
 		else {
       await accounts.updateSurveysDone(ctx.session.username, 1)

@@ -21,7 +21,20 @@
 			</aside>
 		{{/if}}
 		<main>
-		<p>This is a secure page. Users need to have a valid account and be logged in to see it.</p>
+		<h2>{{record}}</h2>
+    <form action="/survey" method="post">
+      <input type="radio" name="scale" value="1">
+      <label for="1">Strongly Disagree</label><br>
+      <input type="radio" name="scale" value="2">
+      <label for="2">Disagree</label><br>
+      <input type="radio" name="scale" value="3">
+      <label for="3">Neither agree nor disagree</label><br>
+      <input type="radio" name="scale" value="4">
+      <label for="4">Agree</label><br>
+      <input type="radio" name="scale" value="5">
+      <label for="5">Strongly agree</label><br>
+      <p><input type="submit" value="Submit"></p>
+    </form>
 		<p><a href="/">Home page</a></p>
 		</main>
 	</body>
