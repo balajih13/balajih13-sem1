@@ -138,7 +138,7 @@ surveysDone TEXT, survey1Score TEXT);'
 		sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
 		records = await this.db.get(sql)
 		const score = records[`survey${ String(surveyID) }Score`].replace('0', String(questionScore))
-		sql = `UPDATE users SET survey${ String(surveyID) }Score = "${ score }" WHERE username = "${username}";`
+		sql = `UPDATE users SET survey${ String(surveyID) }Score = "${ score }" WHERE user = "${username}";`
 		records = await this.db.run(sql)
 	}
 	/**
@@ -155,7 +155,7 @@ surveysDone TEXT, survey1Score TEXT);'
 		sql = `SELECT survey${ String(surveyID) }Score FROM users WHERE user = "${username}";`
 		records = await this.db.get(sql)
 		const score = records[`survey${ String(surveyID) }Score`].replace('0', String(questionScore))
-		sql = `UPDATE users SET survey${ String(surveyID) }Score = "${ score }" WHERE username = "${username}";`
+		sql = `UPDATE users SET survey${ String(surveyID) }Score = "${ score }" WHERE user = "${username}";`
 		records = await this.db.run(sql)
 	}
 	/**
