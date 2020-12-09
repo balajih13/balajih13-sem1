@@ -21,20 +21,19 @@ router.get('/', async ctx => {
 	const surveys = await new Surveys(dbName)
 	try {
 		let results = await accounts.getUnansweredPosition(ctx.session.username, 1)
-		if(results !== -1) results = await surveys.getQuestion(1, results)
-		else {
-      await accounts.updateSurveysDone(ctx.session.username, 1)
-      ctx.redirect('/')
+		if(results !== -1) {
+			ctx.hbs.record = {} ; const maxValue = 6
+			if(results + 1 === maxValue) ctx.hbs.record.status = 'Finish'
+			else ctx.hbs.record.status = 'Next'
+			results = await surveys.getQuestion(1, results) ; ctx.hbs.record.question = results
+			await ctx.render('survey', ctx.hbs)
+		} else {
+			await accounts.updateSurveysDone(ctx.session.username, 1) ; ctx.redirect('/')
 		}
-		ctx.hbs.record = results
-		await ctx.render('survey', ctx.hbs)
 	} catch(err) {
-    console.log(err.message)
-		ctx.hbs.error = err.message
-		await ctx.render('error', ctx.hbs)
+		ctx.hbs.error = err.message ; await ctx.render('error', ctx.hbs)
 	} finally {
-		accounts.close()
-		surveys.close()
+		accounts.close() ; surveys.close()
 	}
 })
 

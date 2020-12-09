@@ -21,9 +21,9 @@
 			</aside>
 		{{/if}}
 		<main>
-		<h2>{{record}}</h2>
+		<h2>{{record.question}}</h2>
     <form action="/survey" method="post">
-      <input type="radio" name="scale" value="1">
+      <input type="radio" name="scale" value="1" required>
       <label for="1">Strongly Disagree</label><br>
       <input type="radio" name="scale" value="2">
       <label for="2">Disagree</label><br>
@@ -33,7 +33,7 @@
       <label for="4">Agree</label><br>
       <input type="radio" name="scale" value="5">
       <label for="5">Strongly agree</label><br>
-      <p><input type="submit" value="Submit"></p>
+      <p><input type="submit" value="{{record.status}}"></p>
     </form>
 		<p><a href="/">Home page</a></p>
 		</main>

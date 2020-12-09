@@ -167,16 +167,44 @@ test('GET SURVEY SCORE    : survey not completed', async test => {
 	}
 })
 
-// test('GET SURVEY SCORE    : valid results', async test => {
-// 	test.plan(1)
-// 	const account = await new Accounts()
-// 	try {
-// 		await account.register('doej', 'password', 'doej@gmail.com')
-// 		const value = await account.getSurveyScore('doej', -1)
-// 		test.is(value, -1)
-// 	} catch(err) {
-// 		test.fail(err.message)
-// 	} finally {
-// 		account.close()
-// 	}
-// })
+test('GET UNANSWERED POSITION    : invalid username', async test => {
+	test.plan(1)
+	const account = await new Accounts()
+	try {
+		await account.register('doej', 'password', 'doej@gmail.com')
+		await account.updateScore('roej', 1)
+		test.fail('error not thrown')
+	} catch(err) {
+		test.is(err.message, 'username "roej" not found', 'incorrect error message')
+	} finally {
+		account.close()
+	}
+})
+
+test('UPDATE SCORE    : invalid username', async test => {
+	test.plan(1)
+	const account = await new Accounts()
+	try {
+		await account.register('doej', 'password', 'doej@gmail.com')
+		await account.updateScore('roej', 1, 2)
+		test.fail('error not thrown')
+	} catch(err) {
+		test.is(err.message, 'username "roej" not found', 'incorrect error message')
+	} finally {
+		account.close()
+	}
+})
+
+test('UPDATE SURVEYS DONE    : invalid username', async test => {
+	test.plan(1)
+	const account = await new Accounts()
+	try {
+		await account.register('doej', 'password', 'doej@gmail.com')
+		await account.updateSurveysDone('roej', 1)
+		test.fail('error not thrown')
+	} catch(err) {
+		test.is(err.message, 'username "roej" not found', 'incorrect error message')
+	} finally {
+		account.close()
+	}
+})
